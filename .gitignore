@@ -1,0 +1,13 @@
+output/
+build/
+.vscode/
+bin/
+obj/
+out/
+venv/
+__pycache__/
+*.wav
+*.exe
+*.pdb
+*.ilk
+*.obj
