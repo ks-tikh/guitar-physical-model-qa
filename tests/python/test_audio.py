@@ -18,3 +18,19 @@ def test_wav_file_not_empty():
     file_size = os.path.getsize("guitar_sound.wav")
 
     assert file_size > 44, "WAV файл слишком маленький, вероятно, пустой!"
+
+def test_buf_freq_zero_should_fail():
+    result = subprocess.run([EXE_PATH, "-170"], capture_output=True, text=True)
+
+    assert result.returncode != 0, "Баг: при freq=0 должен падать с кодом 1"
+    assert "frequency" in result.stderr.lower()
+
+def test_buf_freq_negative_should_fail():
+    result = subprocess.run([EXE_PATH, "22050"], capture_output=True, text=True)
+
+    assert result.returncode != 0
+
+def test_buf_freq_high_should_fail():
+    result = subprocess.run([EXE_PATH, "0"], capture_output=True, text=True)
+
+    assert result.returncode != 0

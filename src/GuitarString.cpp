@@ -4,6 +4,12 @@
 #include <ctime> 
 
 GuitarString::GuitarString(double frequency) {
+    if (frequency <= 0) {
+        throw std::invalid_argument("frequency must be > 0");
+    }
+    if (frequency >= sampling_rate / 2.0) {
+        throw std::invalid_argument("frequency must be < Nyquist (sampling_rate/2)");
+    }
     int N = static_cast<int>(std::round(sampling_rate / frequency));
     if (N < 2) N = 2;
     for (int i = 0; i < N; i++) {

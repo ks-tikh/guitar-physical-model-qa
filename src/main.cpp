@@ -1,7 +1,9 @@
 #include "GuitarString.hpp"
 #include <iostream>
 #include <vector>
+#include <string>
 #include <fstream>
+#include <stdexcept>
 
 void writeWavHeader(std::ofstream& file, int samplesCount) {
     int sampleRate = 44100;
@@ -30,13 +32,35 @@ void writeWavHeader(std::ofstream& file, int samplesCount) {
     file.write(reinterpret_cast<char*>(&dataSize), 4);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     double freq = 440.0;
     double duration = 2.0; 
+    if (argc > 1) {
+        try {
+            freq = std::stod(std::string(argv[1]));
+        } catch (...) {
+            std::cerr << "Invalid frequency argument\n";
+            return 1;
+        }
+    }
+    try {
+        GuitarString stringA(freq);
+        stringA.pluck();
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+        return 1;
+    }
+
     int sampleRate = 44100;
     int totalSamples = static_cast<int>(sampleRate * duration);
 
-    GuitarString stringA(freq);
+    GuitarString stringA(440.0); // временная заглушка чтобы компилилось
+    try {
+        stringA = GuitarString(freq);
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+        return 1;
+    }
     stringA.pluck();
 
     std::ofstream wavFile("guitar_sound.wav", std::ios::binary);
