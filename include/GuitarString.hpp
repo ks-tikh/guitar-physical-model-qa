@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <deque>
+#include <stdexcept>
 
 class GuitarString {
 private:
