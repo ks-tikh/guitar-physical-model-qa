@@ -43,38 +43,27 @@ int main(int argc, char* argv[]) {
             return 1;
         }
     }
+        int sampleRate = 44100;
+    int totalSamples = static_cast<int>(sampleRate * duration);
+
     try {
         GuitarString stringA(freq);
         stringA.pluck();
+
+        std::ofstream wavFile("guitar_sound.wav", std::ios::binary);
+        writeWavHeader(wavFile, totalSamples);
+
+        for (int i = 0; i < totalSamples; ++i) {
+            double s = stringA.sample();
+            short intSample = static_cast<short>(s * 32767);
+            wavFile.write(reinterpret_cast<char*>(&intSample), 2);
+            stringA.tic();
+        }
     } catch (const std::invalid_argument& e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;
     }
 
-    int sampleRate = 44100;
-    int totalSamples = static_cast<int>(sampleRate * duration);
-
-    GuitarString stringA(440.0); // временная заглушка чтобы компилилось
-    try {
-        stringA = GuitarString(freq);
-    } catch (const std::invalid_argument& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 1;
-    }
-    stringA.pluck();
-
-    std::ofstream wavFile("guitar_sound.wav", std::ios::binary);
-    writeWavHeader(wavFile, totalSamples);
-
-    for (int i = 0; i < totalSamples; ++i) {
-        double s = stringA.sample();
-        short intSample = static_cast<short>(s * 32767);
-        wavFile.write(reinterpret_cast<char*>(&intSample), 2);
-        stringA.tic();
-    }
-
-    wavFile.close();
     std::cout << "Success! File 'guitar_sound.wav' created." << std::endl;
-
     return 0;
 }
